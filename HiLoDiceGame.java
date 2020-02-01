@@ -1,3 +1,5 @@
+package com.castillo;
+
 import java.util.Scanner;
 import java.util.Random;
 
@@ -102,7 +104,7 @@ public class Main {
 
     private static int userLost(int coins, int bet) {
         System.out.println("Sorry, You lost " + bet + " Coins.");
-        System.out.println("New Balance: " + (coins + bet));
+        System.out.println("New Balance: " + (coins - bet));
         return coins - bet;
     }
 
