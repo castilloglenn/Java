@@ -2,201 +2,171 @@ import java.util.Scanner;
 import java.util.Random;
 
 public class Character {
+
     private String charName;
     private String charClass;
     private int level = 1;
-    private int maxHealth;
-    private int maxMana;
-    private int physicalAttack;
-    private int magicalAttack;
-    private int physicalDefense;
-    private int magicalDefense;
-    private int criticalChance;
+    private double maxHealth;
+    private double maxMana;
+    private double physicalAttack;
+    private double magicalAttack;
+    private double physicalDefense;
+    private double magicalDefense;
+    private double criticalChance;
 
-    private boolean alive = true;
-    private int battleHealth;
-    private int battleMana;
+    private boolean aliveStatus = true;
+    private boolean inBattleStatus = false;
+    private boolean criticalDamage = false;
+    private double battleHealth;
+    private double battleMana;
 
-    private Scanner input = new Scanner(System.in);
-    private Random random = new Random();
+    public Scanner input = new Scanner(System.in);
+    public Random random = new Random();
+
+    public void refreshHealth() {
+        this.battleHealth = this.maxHealth;
+        this.battleMana = this.maxMana;
+    }
 
     public void enterBattleState() {
-        battleHealth = maxHealth;
-        battleHealth = maxMana;
+        this.inBattleStatus = true;
+        this.battleHealth = this.maxHealth;
+        this.battleMana = this.maxMana;
+    }
+
+    public boolean checkVital() {
+        return this.battleHealth <= 0;
+    }
+
+    public double dealDamage(double damageDealt, double enemyDefense) {
+        int criticalPercent = random.nextInt(100) + 1;
+
+        if (Double.valueOf(criticalPercent) <= this.criticalChance) {
+            this.criticalDamage = true;
+            damageDealt *= 1.5;
+            System.out.println("Crit takes effect");
+        }
+
+        double netDamage = damageDealt * (100 / (100 + enemyDefense));
+
+        System.out.printf("Total damage is: %,.0f\n\n", netDamage);
+        return netDamage;
+    }
+
+    public double randomRange(int low, int high) {
+        high++;
+        return Double.valueOf(random.nextInt(high-low) + low);
     }
 
     public String getName() {
-        return charName;
+        return this.charName;
     }
 
     public String getCharClass() {
-        return charClass;
+        return this.charClass;
     }
 
     public int getLevel() {
-        return level;
+        return this.level;
     }
 
-    public int getMaxHealth() {
-        return maxHealth;
+    public double getMaxHealth() {
+        return this.maxHealth;
     }
 
-    public int getMaxMana() {
-        return maxMana;
+    public double getMaxMana() {
+        return this.maxMana;
     }
 
-    public int getPhyAttack() {
-        return physicalAttack;
+    public double getPhyAttack() {
+        return this.physicalAttack;
     }
 
-    public int getMagAttack() {
-        return magicalAttack;
+    public double getMagAttack() {
+        return this.magicalAttack;
     }
 
-    public int getPhyDefense() {
-        return physicalDefense;
+    public double getPhyDefense() {
+        return this.physicalDefense;
     }
 
-    public int getMagDefense() {
-        return magicalDefense;
+    public double getMagDefense() {
+        return this.magicalDefense;
     }
 
-    public int getCriticalChance() {
-        return criticalChance;
+    public double getCriticalChance() {
+        return this.criticalChance;
     }
 
-    public void getStatus() {
-        System.out.printf("Player %s\nClass: %s\nLevel: %d\nMax Health: %d\nMax Mana: %d\nPhysical Attack: %d\nMagical Attack: %d\nPhysical Defense: %d\nMagical Defense: %d\nCritical Chance: %d\n\n", getName(), getCharClass(), getLevel(), getMaxHealth(), getMaxMana(), getPhyAttack(), getMagAttack(), getPhyDefense(), getMagDefense(), getCriticalChance());
+    public boolean getAliveStatus() {
+        return this.aliveStatus;
     }
 
-    public void regName() {
-        boolean goodState = false;
-        while (!goodState) {
-            System.out.print("Enter character name: ");
-            charName = input.nextLine();
-
-            if (charName.length() <= 10 && !charName.contains(" ")) {
-                System.out.printf("Welcome, %s!\n", getName());
-                goodState = true;
-            } else {
-                System.out.println("Usernames must be not longer than 10 characters and no spaces are allowed.");
-            }
-        }
+    public boolean getInBattleStatus() {
+        return this.inBattleStatus;
     }
 
-    public void regClass(String name) {
-        boolean goodState = false;
-        while (!goodState) {
-            System.out.printf("Hello %s, Choose your class:\nA. Warrior\nB. Mage\nC. Assassin\n> ", name);
-            charClass = input.nextLine().toLowerCase();
-
-            switch (charClass) {
-                case "a":
-                    charClass = "Warrior";
-                    regStatus();
-                    goodState = true;
-                    break;
-                case "b":
-                    charClass = "Mage";
-                    regStatus();
-                    goodState = true;
-                    break;
-                case "c":
-                    charClass = "Assassin";
-                    regStatus();
-                    goodState = true;
-                    break;
-                default:
-                    System.out.println("Choose only the letters provided.");
-                    break;
-            }
-        }
+    public double getBattleHealth() {
+        return this.battleHealth;
     }
 
-    public void regStatus() {
-        switch (charClass) {
-            case "Warrior":
-                maxHealth = randomRange(450, 500);
-                maxMana = randomRange(100, 150);
-                physicalAttack = randomRange(40, 80);
-                magicalAttack = randomRange(20, 60);
-                physicalDefense = randomRange(80, 100);
-                magicalDefense = randomRange(40, 80);
-                criticalChance = randomRange(10, 30);
-                break;
-            case "Mage":
-                maxHealth = randomRange(350, 450);
-                maxMana = randomRange(175, 200);
-                physicalAttack = randomRange(20, 60);
-                magicalAttack = randomRange(80, 100);
-                physicalDefense = randomRange(20, 60);
-                magicalDefense = randomRange(80, 100);
-                criticalChance = randomRange(20, 40);
-                break;
-            case "Assassin":
-                maxHealth = randomRange(300, 400);
-                maxMana = randomRange(125, 175);
-                physicalAttack = randomRange(80, 100);
-                magicalAttack = randomRange(40, 80);
-                physicalDefense = randomRange(40, 80);
-                magicalDefense = randomRange(20, 60);
-                criticalChance = randomRange(40, 50);
-                break;
-            default:
-                throw new RuntimeException("User Class not completed. Please restart the program.");
-        }
+    public double getBattleMana() {
+        return this.battleMana;
     }
 
-    public int randomRange(int low, int high) {
-        high++;
-        return random.nextInt(high-low) + low;
+    public void setName(String newName) {
+        this.charName = newName;
     }
 
-    public void raiseLevel() {
-        level += 1;
-        switch (charClass) {
-            case "Warrior":
-                maxHealth += randomRange(450, 500) * 0.2;
-                maxMana += randomRange(100, 150) * 0.2;
-                physicalAttack += randomRange(40, 80) * 0.2;
-                magicalAttack += randomRange(20, 60) * 0.2;
-                physicalDefense += randomRange(80, 100) * 0.2;
-                magicalDefense += randomRange(40, 80) * 0.2;
-                break;
-            case "Mage":
-                maxHealth += randomRange(350, 450) * 0.2;
-                maxMana += randomRange(175, 200) * 0.2;
-                physicalAttack += randomRange(20, 60) * 0.2;
-                magicalAttack += randomRange(80, 100) * 0.2;
-                physicalDefense += randomRange(20, 60) * 0.2;
-                magicalDefense += randomRange(80, 100) * 0.2;
-                break;
-            case "Assassin":
-                maxHealth += randomRange(300, 400) * 0.2;
-                maxMana += randomRange(125, 175) * 0.2;
-                physicalAttack += randomRange(80, 100) * 0.2;
-                magicalAttack += randomRange(40, 80) * 0.2;
-                physicalDefense += randomRange(40, 80) * 0.2;
-                magicalDefense += randomRange(20, 60) * 0.2;
-                break;
-            default:
-                throw new RuntimeException("User Class not completed. Please restart the program.");
-        }
+    public void setCharClass(String newClass) {
+        this.charClass = newClass;
+    }
 
-        if (level % 10 == 0) {
-            switch (charClass) {
-                case "Warrior":
-                    criticalChance += randomRange(10, 30) * 0.1;
-                    break;
-                case "Mage":
-                    criticalChance += randomRange(20, 40) * 0.1;
-                    break;
-                case "Assassin":
-                    criticalChance += randomRange(40, 50) * 0.1;
-                    break;
-                default:
-                    throw new RuntimeException("User Class not completed. Please restart the program.");
-            }
-        }
+    public void setLevel(int newLevel) {
+        this.level = newLevel;
+    }
+
+    public void setMaxHealth(double newMaxLevel) {
+        this.maxHealth = newMaxLevel;
+    }
+
+    public void setMaxMana(double newMaxMana) {
+        this.maxMana = newMaxMana;
+    }
+
+    public void setPhyAttack(double newPhyAtk) {
+        this.physicalAttack = newPhyAtk;
+    }
+
+    public void setMagAttack(double newMagAtk) {
+        this.magicalAttack = newMagAtk;
+    }
+
+    public void setPhyDefense(double newPhyDef) {
+        this.physicalDefense = newPhyDef;
+    }
+
+    public void setMagDefense(double newMagDef) {
+        this.magicalDefense = newMagDef;
+    }
+
+    public void setCriticalChance(double newCritChance) {
+        this.criticalChance = newCritChance;
+    }
+
+    public void setAliveStatus(boolean newStatus) {
+        this.aliveStatus = newStatus;
+    }
+
+    public void setInBattleStatus(boolean newStatus) {
+        this.inBattleStatus = newStatus;
+    }
+
+    public void setBattleHealth(double newHealth) {
+        this.battleHealth = newHealth;
+    }
+
+    public void setBattleMana(double newMana) {
+        this.battleMana = newMana;
     }
 }
